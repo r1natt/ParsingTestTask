@@ -84,6 +84,8 @@ def post_auth(token: Token, phpMyAdmin: phpMyAdminType):
     if response.cookies.get("pmaUser-1") is None or \
         response.cookies.get("pmaAuth-1") is None:
         raise AuthError("Не удалось авторизоваться")
+    else:
+        logger.info("Успешный логин")
 
     if not response.ok:
         raise BadResponse("Плохой ответ")
@@ -213,7 +215,12 @@ def print_table(header_row: list[str], data_rows: list[list[str | int]]):
 
     print(table)
 
-def hide_string_part(s):
+def hide_string_part(s: str):
+    """Сокращает значения"""
+    if not isinstance(s, str):
+        raise TypeError("входная строка должна быть строкой :|")
+    if len(s) < 11:
+        return f"{s[:1]}...{s[-1:]}"
     return f"{s[:5]}...{s[-5:]}"
 
 
