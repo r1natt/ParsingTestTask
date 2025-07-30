@@ -173,13 +173,21 @@ def parse_table_headers(thead_part):
     """
     Парсинг header`ов из таблицы
     """
-    column_headers = thead_part.find_all("th", {"class": "column_heading"})
+    column_headers = thead_part.find_all("th", class_="column_heading")
 
     header_row = []
 
     for header in column_headers:
-        header_object = header.find("a", {"class": "softlink"})
-        header_row.append(header.get_text().strip())
+        header_object = header.find("a", class_="sortlink")
+
+        for child in header_object.children:
+
+            # Проверка ниже нужна, если в теге будет содержаться текст в тегах
+            # <small> или <span>, текст которых функция get_text() тоже примет
+            # как текст
+            if isinstance(child, str):
+                header_row.append(child)
+                break
 
     return header_row
 
@@ -236,5 +244,7 @@ if __name__ == "__main__":
     html_page = get_table_sql(token)
 
     header_row, data_rows = parse_users_table(html_page)
+
+    print("Таблица users:")
 
     print_table(header_row, data_rows)
